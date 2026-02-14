@@ -22,6 +22,8 @@ export function saveAnalysis(entry) {
     extractedSkills: entry.extractedSkills ?? {},
     skillConfidenceMap: entry.skillConfidenceMap ?? {},
     baseReadinessScore: entry.baseReadinessScore ?? entry.readinessScore ?? 0,
+    companyIntel: entry.companyIntel ?? null,
+    roundMapping: entry.roundMapping ?? [],
     plan: entry.plan ?? {},
     checklist: entry.checklist ?? {},
     questions: entry.questions ?? [],

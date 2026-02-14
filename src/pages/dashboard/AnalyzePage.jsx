@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../components/ui/card'
 import { runAnalysis } from '../../lib/analysisEngine'
+import { inferCompanyIntel } from '../../lib/companyIntel'
+import { generateRoundMapping } from '../../lib/roundMapping'
 import { saveAnalysis } from '../../lib/storage'
 
 export function AnalyzePage() {
@@ -13,11 +15,17 @@ export function AnalyzePage() {
   const handleSubmit = (e) => {
     e.preventDefault()
     const result = runAnalysis({ company, role, jdText })
+    const companyIntel = company.trim() ? inferCompanyIntel(company, jdText) : null
+    const roundMapping = companyIntel
+      ? generateRoundMapping(companyIntel.sizeCategory, result.extractedSkills)
+      : []
     const record = saveAnalysis({
       company,
       role,
       jdText,
       ...result,
+      companyIntel,
+      roundMapping,
     })
     navigate(`/dashboard/results?id=${record.id}`)
   }
