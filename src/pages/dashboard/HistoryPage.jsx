@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card'
 import { getHistory } from '../../lib/storage'
 import { Calendar, Building2, Briefcase } from 'lucide-react'
 

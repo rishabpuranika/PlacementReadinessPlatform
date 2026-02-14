@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
-import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card'
 import { getAnalysisById, getLastAnalysisId, updateAnalysis } from '../../lib/storage'
 import { ArrowLeft, Copy, Download } from 'lucide-react'
 
@@ -112,25 +112,25 @@ export function ResultsPage() {
   const handleDownloadTxt = useCallback(() => {
     const intelSection = data?.companyIntel
       ? [
-          '',
-          '--- Company Intel ---',
-          `Company: ${data.companyIntel.companyName}`,
-          `Industry: ${data.companyIntel.industry}`,
-          `Size: ${data.companyIntel.sizeLabel}`,
-          `Typical Focus: ${data.companyIntel.typicalFocus}`,
-        ].join('\n')
+        '',
+        '--- Company Intel ---',
+        `Company: ${data.companyIntel.companyName}`,
+        `Industry: ${data.companyIntel.industry}`,
+        `Size: ${data.companyIntel.sizeLabel}`,
+        `Typical Focus: ${data.companyIntel.typicalFocus}`,
+      ].join('\n')
       : ''
     const roundSection = data?.roundMapping?.length
       ? [
-          '',
-          '--- Round Mapping ---',
-          ...data.roundMapping.map((r) => {
-            const title = r.roundTitle ?? r.name ?? ''
-            const areas = (r.focusAreas ?? (r.desc ? [r.desc] : [])).join(', ')
-            const why = r.whyItMatters ?? r.why ?? ''
-            return `${title}: ${areas}\n  Why: ${why}`
-          }),
-        ].join('\n')
+        '',
+        '--- Round Mapping ---',
+        ...data.roundMapping.map((r) => {
+          const title = r.roundTitle ?? r.name ?? ''
+          const areas = (r.focusAreas ?? (r.desc ? [r.desc] : [])).join(', ')
+          const why = r.whyItMatters ?? r.why ?? ''
+          return `${title}: ${areas}\n  Why: ${why}`
+        }),
+      ].join('\n')
       : ''
     const sections = [
       `Analysis: ${data?.company || '—'} · ${data?.role || '—'}`,
@@ -271,11 +271,10 @@ export function ResultsPage() {
                   key={`${category}-${skill}`}
                   type="button"
                   onClick={() => toggleSkill(skill)}
-                  className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
-                    isKnow
-                      ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
-                      : 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100'
-                  }`}
+                  className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${isKnow
+                    ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
+                    : 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100'
+                    }`}
                   title={isKnow ? 'I know this (click to change)' : 'Need practice (click to change)'}
                 >
                   {skill}

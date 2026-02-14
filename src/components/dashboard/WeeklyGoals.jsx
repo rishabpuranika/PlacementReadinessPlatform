@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardTitle, CardContent } from '../ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card'
 
 const SOLVED = 12
 const TARGET = 20
@@ -28,11 +28,10 @@ export function WeeklyGoals() {
           {DAYS.map((day, i) => (
             <div key={day} className="flex flex-col items-center gap-1.5">
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
-                  ACTIVITY[i]
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${ACTIVITY[i]
                     ? 'bg-primary text-white'
                     : 'bg-gray-100 text-gray-400'
-                }`}
+                  }`}
               >
                 {day.slice(0, 1)}
               </div>

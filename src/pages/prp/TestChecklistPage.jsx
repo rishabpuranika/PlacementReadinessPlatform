@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card'
 import {
   getTestChecklist,
   setTestChecklist,
@@ -96,11 +96,10 @@ export function TestChecklistPage() {
               </button>
               <Link
                 to="/prp/08-ship"
-                className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                  complete
-                    ? 'bg-primary text-white hover:bg-primary-hover'
-                    : 'bg-gray-100 text-gray-400 cursor-not-allowed pointer-events-none'
-                }`}
+                className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${complete
+                  ? 'bg-primary text-white hover:bg-primary-hover'
+                  : 'bg-gray-100 text-gray-400 cursor-not-allowed pointer-events-none'
+                  }`}
               >
                 Ship <ChevronRight className="w-4 h-4" />
               </Link>

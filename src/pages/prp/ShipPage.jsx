@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card'
 import { isTestChecklistComplete } from '../../lib/testChecklistStorage'
 import { Lock, CheckCircle } from 'lucide-react'
 
@@ -53,7 +53,7 @@ export function ShipPage() {
           </CardHeader>
           <CardContent>
             <p className="text-gray-700 mb-4">
-              Your placement readiness platform has passed all verification tests. 
+              Your placement readiness platform has passed all verification tests.
               Complete proof and artifact links to reach Shipped status.
             </p>
             <Link

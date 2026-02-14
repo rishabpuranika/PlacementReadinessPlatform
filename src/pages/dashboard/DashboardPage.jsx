@@ -6,7 +6,7 @@ import {
   WeeklyGoals,
   UpcomingAssessments,
 } from '../../components/dashboard'
-import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card'
 import { Search } from 'lucide-react'
 
 export function DashboardPage() {

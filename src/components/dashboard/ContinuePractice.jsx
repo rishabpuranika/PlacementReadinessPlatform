@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../ui/card'
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../ui/Card'
 
 const TOPIC = 'Dynamic Programming'
 const COMPLETED = 3

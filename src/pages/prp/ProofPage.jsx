@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card'
 import {
   getProofSubmission,
   setProofSubmission,
@@ -99,9 +99,8 @@ export function ProofPage() {
         {/* Status badge */}
         <div className="flex items-center gap-3">
           <span
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium ${
-              shipped ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-amber-50 text-amber-800 border border-amber-200'
-            }`}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium ${shipped ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-amber-50 text-amber-800 border border-amber-200'
+              }`}
           >
             {shipped ? (
               <>

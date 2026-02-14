@@ -7,7 +7,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts'
-import { Card, CardHeader, CardTitle, CardContent } from '../ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card'
 
 const DATA = [
   { subject: 'DSA', value: 75, fullMark: 100 },
