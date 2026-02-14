@@ -20,6 +20,8 @@ export function saveAnalysis(entry) {
     role: entry.role ?? '',
     jdText: entry.jdText ?? '',
     extractedSkills: entry.extractedSkills ?? {},
+    skillConfidenceMap: entry.skillConfidenceMap ?? {},
+    baseReadinessScore: entry.baseReadinessScore ?? entry.readinessScore ?? 0,
     plan: entry.plan ?? {},
     checklist: entry.checklist ?? {},
     questions: entry.questions ?? [],
@@ -56,4 +58,25 @@ export function getLastAnalysisId() {
   } catch {
     return null
   }
+}
+
+export function updateAnalysis(id, updates) {
+  const list = getHistory()
+  const idx = list.findIndex((e) => e.id === id)
+  if (idx === -1) return null
+  const { baseReadinessScore, ...rest } = updates
+  const merged = { ...list[idx], ...rest }
+  if (baseReadinessScore === undefined && list[idx].baseReadinessScore != null) {
+    merged.baseReadinessScore = list[idx].baseReadinessScore
+  } else if (baseReadinessScore !== undefined) {
+    merged.baseReadinessScore = baseReadinessScore
+  }
+  list[idx] = merged
+  try {
+    localStorage.setItem(KEY, JSON.stringify(list))
+  } catch (e) {
+    console.warn('localStorage update failed:', e)
+    return null
+  }
+  return merged
 }
