@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../components/ui/card'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../components/ui/Card'
 import { runAnalysis } from '../../lib/analysisEngine'
 import { inferCompanyIntel } from '../../lib/companyIntel'
 import { generateRoundMapping } from '../../lib/roundMapping'
