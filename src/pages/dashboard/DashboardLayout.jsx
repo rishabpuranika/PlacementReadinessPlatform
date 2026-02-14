@@ -1,6 +1,8 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import {
   LayoutDashboard,
+  Search,
+  History,
   Code2,
   ClipboardCheck,
   BookOpen,
@@ -9,6 +11,8 @@ import {
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/dashboard/analyze', label: 'Analyze', icon: Search },
+  { to: '/dashboard/history', label: 'History', icon: History },
   { to: '/dashboard/practice', label: 'Practice', icon: Code2 },
   { to: '/dashboard/assessments', label: 'Assessments', icon: ClipboardCheck },
   { to: '/dashboard/resources', label: 'Resources', icon: BookOpen },
