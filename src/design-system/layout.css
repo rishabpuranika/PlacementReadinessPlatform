@@ -1,0 +1,120 @@
+/**
+ * KodNest Premium Build System — Layout
+ * [Top Bar] → [Context Header] → [Primary Workspace + Secondary Panel] → [Proof Footer]
+ */
+
+.kn-app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* —— Top Bar —— */
+.kn-topbar {
+  height: var(--topbar-height);
+  padding: 0 var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: var(--border);
+  background: var(--color-bg);
+  flex-shrink: 0;
+}
+
+.kn-topbar__left {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--color-text);
+}
+
+.kn-topbar__center {
+  font-size: var(--text-caption-size);
+  color: var(--color-text-muted);
+}
+
+.kn-topbar__right {
+  /* Status badge lives here */
+}
+
+/* —— Context Header —— */
+.kn-context-header {
+  padding: var(--context-header-padding);
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+  border-bottom: var(--border);
+  flex-shrink: 0;
+}
+
+.kn-context-header .kn-headline {
+  margin-bottom: var(--space-1);
+}
+
+.kn-context-header .kn-subtext {
+  margin-bottom: 0;
+}
+
+/* —— Main content: Workspace + Panel —— */
+.kn-main {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.kn-workspace {
+  flex: 0 0 70%;
+  padding: var(--space-4);
+  overflow: auto;
+  border-right: var(--border);
+}
+
+.kn-panel {
+  flex: 0 0 30%;
+  padding: var(--space-4);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.kn-panel__title {
+  font-size: var(--text-caption-size);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-1);
+}
+
+.kn-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+/* —— Proof Footer —— */
+.kn-proof-footer {
+  min-height: var(--footer-min-height);
+  padding: var(--space-2) var(--space-4);
+  border-top: var(--border);
+  background: var(--color-bg);
+  flex-shrink: 0;
+}
+
+.kn-proof-footer__title {
+  font-size: var(--text-caption-size);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-2);
+}
+
+.kn-proof-footer__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}

@@ -1,0 +1,182 @@
+/**
+ * KodNest Premium Build System — Components
+ * Same hover, same radius, clean borders, no drop shadows.
+ */
+
+/* —— Buttons —— */
+.kn-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+  border-radius: var(--radius);
+  border: var(--border-width) solid transparent;
+  cursor: pointer;
+  transition: background-color var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.kn-btn-primary {
+  background: var(--color-accent);
+  color: var(--color-bg);
+  border-color: var(--color-accent);
+}
+
+.kn-btn-primary:hover {
+  background: #6d0000;
+  border-color: #6d0000;
+}
+
+.kn-btn-secondary {
+  background: transparent;
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.kn-btn-secondary:hover {
+  border-color: var(--color-text-muted);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.kn-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* —— Inputs —— */
+.kn-input {
+  width: 100%;
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: var(--border);
+  border-radius: var(--radius);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.kn-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.kn-input:hover {
+  border-color: #ccc;
+}
+
+.kn-input:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 1px var(--color-border-focus);
+}
+
+/* —— Cards —— */
+.kn-card {
+  background: var(--color-bg);
+  border: var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  transition: border-color var(--transition);
+}
+
+.kn-card:hover {
+  border-color: #ddd;
+}
+
+/* —— Status badge —— */
+.kn-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-caption-size);
+  font-weight: 500;
+  line-height: 1.4;
+  border-radius: var(--radius);
+  border: var(--border-width) solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.kn-badge--success {
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+.kn-badge--warning {
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+}
+
+.kn-badge--accent {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* —— Copyable prompt box (secondary panel) —— */
+.kn-prompt-box {
+  width: 100%;
+  padding: var(--space-2);
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: var(--border);
+  border-radius: var(--radius);
+  resize: vertical;
+  min-height: 80px;
+  transition: border-color var(--transition);
+}
+
+.kn-prompt-box:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+}
+
+/* —— Proof footer checkboxes —— */
+.kn-check-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-caption-size);
+  line-height: 1.5;
+  color: var(--color-text);
+}
+
+.kn-check-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+/* —— Error & empty states —— */
+.kn-message {
+  padding: var(--space-2);
+  border-radius: var(--radius);
+  border: var(--border);
+  font-size: var(--text-caption-size);
+  line-height: 1.5;
+}
+
+.kn-message--error {
+  border-color: var(--color-accent);
+  background: rgba(139, 0, 0, 0.06);
+  color: var(--color-text);
+}
+
+.kn-message--empty {
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.kn-message strong {
+  display: block;
+  margin-bottom: var(--space-1);
+  color: var(--color-text);
+}

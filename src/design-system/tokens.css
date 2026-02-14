@@ -1,0 +1,57 @@
+/**
+ * KodNest Premium Build System — Design Tokens
+ * Calm, intentional, coherent. Maximum 4 colors. No gradients, no glass, no neon.
+ */
+
+:root {
+  /* —— Color (4-hue system) —— */
+  --color-bg: #F7F6F3;
+  --color-text: #111111;
+  --color-accent: #8B0000;
+  --color-success: #4A6741;
+  --color-warning: #8B6914;
+
+  --color-border: #E5E4E0;
+  --color-border-focus: #8B0000;
+  --color-text-muted: #555555;
+
+  /* —— Typography —— */
+  --font-serif: "Libre Baskerville", Georgia, serif;
+  --font-sans: "Source Sans 3", -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --text-headline: 2rem;
+  --text-headline-line: 1.25;
+  --text-headline-weight: 700;
+  --text-headline-spacing: 0.02em;
+
+  --text-body-size: 17px;
+  --text-body-line: 1.65;
+  --text-body-max-width: 720px;
+
+  --text-subtext-size: 1rem;
+  --text-subtext-line: 1.5;
+  --text-caption-size: 0.875rem;
+  --text-caption-line: 1.5;
+
+  /* —— Spacing (strict scale: 8, 16, 24, 40, 64) —— */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 40px;
+  --space-5: 64px;
+
+  /* —— Radii & borders —— */
+  --radius: 6px;
+  --border-width: 1px;
+  --border: var(--border-width) solid var(--color-border);
+
+  /* —— Transitions —— */
+  --transition: 180ms ease-in-out;
+
+  /* —— Layout —— */
+  --topbar-height: 56px;
+  --context-header-padding: var(--space-4) 0;
+  --workspace-ratio: 0.7;
+  --panel-ratio: 0.3;
+  --footer-min-height: 80px;
+}
