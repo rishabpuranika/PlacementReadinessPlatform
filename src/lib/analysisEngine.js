@@ -142,9 +142,25 @@ function mapSkillsToQuestionKeys(byCategory) {
 }
 
 function generateQuestions(byCategory) {
-  const keys = mapSkillsToQuestionKeys(byCategory)
+  const keys = mapSkillsToQuestionKeys(byCategory || {})
   const questions = []
   const used = new Set()
+  const onlyOther = !byCategory || (Object.keys(byCategory).length === 1 && (byCategory.other || byCategory['General fresher stack']))
+
+  if (onlyOther) {
+    return [
+      'Tell me about yourself.',
+      'Describe a challenging project you worked on.',
+      'How do you handle disagreements in a team?',
+      'What is your approach to problem-solving?',
+      'Where do you see yourself in five years?',
+      'Why do you want to join us?',
+      'What are your strengths and weaknesses?',
+      'Describe a time you learned something new quickly.',
+      'How do you prioritize tasks under pressure?',
+      'Do you have any questions for us?',
+    ].slice(0, 10)
+  }
 
   for (const key of keys) {
     const list = QUESTION_GENERATORS[key]
@@ -173,18 +189,29 @@ function generateQuestions(byCategory) {
 
 function buildChecklist(byCategory) {
   const rounds = {}
-  const cats = Object.keys(byCategory)
-  const hasDSA = cats.some(c => c === 'Core CS') || byCategory['Core CS']?.some(s => /DSA|Data Structures|Algorithms/i.test(s))
-  const hasWeb = !!byCategory.Web?.length
-  const hasData = !!byCategory.Data?.length
+  const cats = Object.keys(byCategory || {})
+  const hasDSA = cats.some(c => c === 'Core CS') || byCategory?.['Core CS']?.some(s => /DSA|Data Structures|Algorithms/i.test(s))
+  const hasWeb = !!byCategory?.Web?.length
+  const onlyOther = cats.length === 1 && (cats[0] === 'other' || cats[0] === 'General fresher stack')
+  const baseItemsByRound = onlyOther
+    ? {
+        'Round 1: Aptitude / Basics': ['Review quantitative aptitude', 'Verbal reasoning', 'Logical puzzles', 'Computer fundamentals'],
+        'Round 2: Technical': ['Basic coding practice', 'Problem-solving patterns', 'Communication and clarity'],
+        'Round 3: Projects': ['Prepare project stories', 'Resume alignment', 'Behavioral STAR format'],
+        'Round 4: HR': ['Self-introduction', 'Why this company?', 'Questions to ask'],
+      }
+    : null
 
-  for (const [roundName, baseItems] of Object.entries(ROUND_TEMPLATES)) {
-    let items = [...baseItems]
-    if (roundName.includes('Round 2') && !hasDSA) {
-      items = items.filter(i => !i.includes('DSA') && !i.includes('dynamic programming'))
-    }
-    if (roundName.includes('Round 3') && hasWeb) {
-      items = ['Revise React/frontend concepts', 'Prepare frontend project deep-dive', ...items.slice(2)]
+  const templates = baseItemsByRound || ROUND_TEMPLATES
+  for (const [roundName, baseItems] of Object.entries(templates)) {
+    let items = [...(baseItems || [])]
+    if (!onlyOther) {
+      if (roundName.includes('Round 2') && !hasDSA) {
+        items = items.filter(i => !i.includes('DSA') && !i.includes('dynamic programming'))
+      }
+      if (roundName.includes('Round 3') && hasWeb) {
+        items = ['Revise React/frontend concepts', 'Prepare frontend project deep-dive', ...items.slice(2)]
+      }
     }
     rounds[roundName] = items.slice(0, 8)
   }
@@ -193,18 +220,34 @@ function buildChecklist(byCategory) {
 
 function buildSevenDayPlan(byCategory) {
   const plan = {}
-  const flatSkills = Object.values(byCategory).flat()
-  const hasReact = flatSkills.some(s => /react/i.test(s))
-  const hasDSA = byCategory['Core CS']?.some(s => /DSA/i.test(s)) ?? flatSkills.some(s => /DSA/i.test(s))
+  const cats = byCategory || {}
+  const flatSkills = Object.values(cats).flat()
+  const onlyOther = Object.keys(cats).length === 1 && (cats.other || cats['General fresher stack'])
+  const hasReact = flatSkills.some(s => /react/i.test(String(s)))
+  const hasDSA = cats['Core CS']?.some(s => /DSA/i.test(String(s))) ?? flatSkills.some(s => /DSA/i.test(String(s)))
+
+  const dayPlansSource = onlyOther
+    ? {
+        1: { focus: 'Basics + communication', items: ['Quantitative basics', 'Logical reasoning', 'Communication clarity'] },
+        2: { focus: 'Basics + fundamentals', items: ['Computer fundamentals', 'Problem-solving approach', 'Practice 2–3 simple problems'] },
+        3: { focus: 'Coding practice', items: ['Basic coding patterns', 'Arrays and strings', '3 easy problems'] },
+        4: { focus: 'Coding + logic', items: ['More coding practice', 'Debugging mindset', '4 easy–medium problems'] },
+        5: { focus: 'Project + resume', items: ['Project stories', 'Resume alignment', 'STAR format prep'] },
+        6: { focus: 'Mock + behavioral', items: ['Mock interview questions', 'Self-introduction', 'Why this role?'] },
+        7: { focus: 'Revision + rest', items: ['Revision of weak areas', 'Relax and prepare mindset'] },
+      }
+    : DAY_PLANS
 
   for (let d = 1; d <= 7; d++) {
-    const base = DAY_PLANS[d]
+    const base = dayPlansSource[d]
     let items = base ? [...base.items] : []
-    if (d === 5 && hasReact) {
-      items = ['Frontend project deep-dive', 'React revision', 'Resume alignment with JD']
-    }
-    if (d === 3 && hasDSA) {
-      items = ['Arrays, strings, hashmaps', 'Sorting and searching', '3 medium DSA problems']
+    if (!onlyOther) {
+      if (d === 5 && hasReact) {
+        items = ['Frontend project deep-dive', 'React revision', 'Resume alignment with JD']
+      }
+      if (d === 3 && hasDSA) {
+        items = ['Arrays, strings, hashmaps', 'Sorting and searching', '3 medium DSA problems']
+      }
     }
     plan[`Day ${d}`] = { focus: base?.focus || 'General', items }
   }
@@ -225,7 +268,7 @@ export function runAnalysis({ company, role, jdText }) {
 
   const extractedSkills = hasAny
     ? byCategory
-    : { 'General fresher stack': ['General CS fundamentals', 'Problem solving', 'Basic programming'] }
+    : { other: ['Communication', 'Problem solving', 'Basic coding', 'Projects'] }
 
   const categoryCount = Object.keys(extractedSkills).length
 

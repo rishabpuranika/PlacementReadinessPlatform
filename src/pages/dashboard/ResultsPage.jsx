@@ -4,11 +4,23 @@ import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/ca
 import { getAnalysisById, getLastAnalysisId, updateAnalysis } from '../../lib/storage'
 import { ArrowLeft, Copy, Download } from 'lucide-react'
 
-function formatPlanText(plan) {
-  if (!plan) return ''
-  return Object.entries(plan)
-    .map(([day, { focus, items }]) => {
-      const lines = [`${day}: ${focus}`, ...(items || []).map((i) => `  • ${i}`)]
+const CATEGORY_LABELS = { coreCS: 'Core CS', languages: 'Languages', web: 'Web', data: 'Data', cloud: 'Cloud/DevOps', testing: 'Testing', other: 'Other' }
+
+function formatPlanText(planOrPlan7Days) {
+  if (!planOrPlan7Days) return ''
+  if (Array.isArray(planOrPlan7Days)) {
+    return planOrPlan7Days
+      .map(({ day, focus, tasks }) => {
+        const lines = [`${day}: ${focus}`, ...(tasks || []).map((i) => `  • ${i}`)]
+        return lines.join('\n')
+      })
+      .join('\n\n')
+  }
+  return Object.entries(planOrPlan7Days)
+    .map(([day, v]) => {
+      const focus = v?.focus ?? ''
+      const items = v?.items ?? v?.tasks ?? []
+      const lines = [`${day}: ${focus}`, ...items.map((i) => `  • ${i}`)]
       return lines.join('\n')
     })
     .join('\n\n')
@@ -16,6 +28,14 @@ function formatPlanText(plan) {
 
 function formatChecklistText(checklist) {
   if (!checklist) return ''
+  if (Array.isArray(checklist)) {
+    return checklist
+      .map(({ roundTitle, items }) => {
+        const lines = [roundTitle, ...(items || []).map((i) => `  • ${i}`)]
+        return lines.join('\n')
+      })
+      .join('\n\n')
+  }
   return Object.entries(checklist)
     .map(([round, items]) => {
       const lines = [round, ...(items || []).map((i) => `  • ${i}`)]
@@ -39,10 +59,11 @@ export function ResultsPage() {
     else setData(null)
   }, [id])
 
-  const baseScore = data?.baseReadinessScore ?? data?.readinessScore ?? 0
-  const skills = data?.extractedSkills
-    ? Object.entries(data.extractedSkills).flatMap(([cat, s]) => s.map((skill) => ({ category: cat, skill })))
-    : []
+  const baseScore = data?.baseScore ?? data?.baseReadinessScore ?? data?.readinessScore ?? 0
+  const extractedSkills = data?.extractedSkills ?? {}
+  const skills = Object.entries(extractedSkills).flatMap(([cat, arr]) =>
+    (Array.isArray(arr) ? arr : []).map((skill) => ({ category: CATEGORY_LABELS[cat] ?? cat, skill }))
+  )
   const skillConfidenceMap = data?.skillConfidenceMap ?? {}
   const getConfidence = (skill) => skillConfidenceMap[skill] ?? 'practice'
   const knowCount = skills.filter((s) => getConfidence(s.skill) === 'know').length
@@ -59,7 +80,7 @@ export function ResultsPage() {
       const nextScore = Math.min(100, Math.max(0, baseScore + 2 * nextKnowCount - 2 * nextPracticeCount))
       const updated = updateAnalysis(data.id, {
         skillConfidenceMap: nextMap,
-        readinessScore: nextScore,
+        finalScore: nextScore,
       })
       if (updated) setData(updated)
     },
@@ -77,8 +98,8 @@ export function ResultsPage() {
   }, [])
 
   const handleCopyPlan = useCallback(() => {
-    copyToClipboard(formatPlanText(data?.plan), '7-day plan')
-  }, [data?.plan, copyToClipboard])
+    copyToClipboard(formatPlanText(data?.plan7Days ?? data?.plan), '7-day plan')
+  }, [data?.plan7Days, data?.plan, copyToClipboard])
 
   const handleCopyChecklist = useCallback(() => {
     copyToClipboard(formatChecklistText(data?.checklist), 'round checklist')
@@ -103,7 +124,12 @@ export function ResultsPage() {
       ? [
           '',
           '--- Round Mapping ---',
-          ...data.roundMapping.map((r) => `${r.name}: ${r.desc}\n  Why: ${r.why}`),
+          ...data.roundMapping.map((r) => {
+            const title = r.roundTitle ?? r.name ?? ''
+            const areas = (r.focusAreas ?? (r.desc ? [r.desc] : [])).join(', ')
+            const why = r.whyItMatters ?? r.why ?? ''
+            return `${title}: ${areas}\n  Why: ${why}`
+          }),
         ].join('\n')
       : ''
     const sections = [
@@ -116,7 +142,7 @@ export function ResultsPage() {
       skills.map((s) => `${s.category}: ${s.skill} (${getConfidence(s.skill)})`).join('\n'),
       '',
       '--- 7-Day Plan ---',
-      formatPlanText(data?.plan),
+      formatPlanText(data?.plan7Days ?? data?.plan),
       '',
       '--- Round-wise Checklist ---',
       formatChecklistText(data?.checklist),
@@ -213,9 +239,13 @@ export function ResultsPage() {
                     )}
                   </div>
                   <div className="flex-1 min-w-0 pb-6">
-                    <h3 className="font-semibold text-gray-900">{round.name}</h3>
-                    <p className="text-sm text-gray-600 mb-1">{round.desc}</p>
-                    <p className="text-xs text-gray-500 italic">Why this round matters: {round.why}</p>
+                    <h3 className="font-semibold text-gray-900">{round.roundTitle ?? round.name}</h3>
+                    <p className="text-sm text-gray-600 mb-1">
+                      {(round.focusAreas ?? (round.desc ? [round.desc] : [])).join(', ')}
+                    </p>
+                    <p className="text-xs text-gray-500 italic">
+                      Why this round matters: {round.whyItMatters ?? round.why}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -304,19 +334,23 @@ export function ResultsPage() {
         </CardHeader>
         <CardContent>
           <ul className="space-y-6">
-            {Object.entries(data.checklist || {}).map(([round, items]) => (
-              <li key={round}>
-                <h3 className="font-semibold text-gray-900 mb-2">{round}</h3>
-                <ul className="space-y-1">
-                  {items.map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-gray-600">
-                      <span className="text-primary mt-0.5">•</span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </li>
-            ))}
+            {(Array.isArray(data.checklist) ? data.checklist : Object.entries(data.checklist || {})).map((item, idx) => {
+              const roundTitle = item.roundTitle ?? item[0]
+              const items = item.items ?? item[1] ?? []
+              return (
+                <li key={idx}>
+                  <h3 className="font-semibold text-gray-900 mb-2">{roundTitle}</h3>
+                  <ul className="space-y-1">
+                    {(Array.isArray(items) ? items : []).map((task) => (
+                      <li key={task} className="flex items-start gap-2 text-sm text-gray-600">
+                        <span className="text-primary mt-0.5">•</span>
+                        {task}
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              )
+            })}
           </ul>
         </CardContent>
       </Card>
@@ -328,19 +362,24 @@ export function ResultsPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            {Object.entries(data.plan || {}).map(([day, { focus, items }]) => (
-              <div key={day}>
-                <h3 className="font-semibold text-gray-900 mb-1">{day}: {focus}</h3>
-                <ul className="space-y-1">
-                  {items?.map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-gray-600">
-                      <span className="text-primary mt-0.5">•</span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+            {(Array.isArray(data.plan7Days) ? data.plan7Days : Object.entries(data.plan ?? {})).map((item, idx) => {
+              const day = item.day ?? item[0]
+              const focus = item.focus ?? item[1]?.focus ?? ''
+              const tasks = item.tasks ?? item[1]?.items ?? []
+              return (
+                <div key={idx}>
+                  <h3 className="font-semibold text-gray-900 mb-1">{day}: {focus}</h3>
+                  <ul className="space-y-1">
+                    {(Array.isArray(tasks) ? tasks : []).map((task) => (
+                      <li key={task} className="flex items-start gap-2 text-sm text-gray-600">
+                        <span className="text-primary mt-0.5">•</span>
+                        {task}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )
+            })}
           </div>
         </CardContent>
       </Card>

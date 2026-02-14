@@ -1,7 +1,9 @@
 /**
  * localStorage persistence for analysis history.
- * Offline, no external APIs.
+ * All entries normalized to canonical schema. Corrupted entries skipped.
  */
+
+import { normalizeEntry, validateEntry } from './analysisSchema'
 
 const KEY = 'placement_prep_history'
 const LAST_ID_KEY = 'placement_prep_last_id'
@@ -10,36 +12,7 @@ function genId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
 }
 
-export function saveAnalysis(entry) {
-  const list = getHistory()
-  const id = entry.id || genId()
-  const record = {
-    id,
-    createdAt: entry.createdAt ?? new Date().toISOString(),
-    company: entry.company ?? '',
-    role: entry.role ?? '',
-    jdText: entry.jdText ?? '',
-    extractedSkills: entry.extractedSkills ?? {},
-    skillConfidenceMap: entry.skillConfidenceMap ?? {},
-    baseReadinessScore: entry.baseReadinessScore ?? entry.readinessScore ?? 0,
-    companyIntel: entry.companyIntel ?? null,
-    roundMapping: entry.roundMapping ?? [],
-    plan: entry.plan ?? {},
-    checklist: entry.checklist ?? {},
-    questions: entry.questions ?? [],
-    readinessScore: entry.readinessScore ?? 0,
-  }
-  const updated = [record, ...list.filter((e) => e.id !== id)]
-  try {
-    localStorage.setItem(KEY, JSON.stringify(updated))
-    localStorage.setItem(LAST_ID_KEY, id)
-  } catch (e) {
-    console.warn('localStorage save failed:', e)
-  }
-  return record
-}
-
-export function getHistory() {
+function getRawHistory() {
   try {
     const raw = localStorage.getItem(KEY)
     if (!raw) return []
@@ -49,9 +22,53 @@ export function getHistory() {
   }
 }
 
+/** Returns { entries: normalized[], skippedCount } */
+export function getHistory() {
+  const raw = getRawHistory()
+  const entries = []
+  let skippedCount = 0
+  for (const entry of raw) {
+    if (!validateEntry(entry)) {
+      skippedCount += 1
+      continue
+    }
+    const normalized = normalizeEntry(entry)
+    if (normalized) entries.push(normalized)
+    else skippedCount += 1
+  }
+  return { entries, skippedCount }
+}
+
+export function saveAnalysis(entry) {
+  const { entries } = getHistory()
+  const id = entry.id || genId()
+  const now = new Date().toISOString()
+  const baseScore = typeof entry.baseScore === 'number' ? entry.baseScore : (entry.baseReadinessScore ?? entry.readinessScore ?? 0)
+  const toSave = normalizeEntry({
+    ...entry,
+    id,
+    createdAt: entry.createdAt ?? now,
+    updatedAt: now,
+    baseScore,
+    finalScore: baseScore,
+    baseReadinessScore: baseScore,
+    readinessScore: baseScore,
+  })
+  if (!toSave) return null
+  const updated = [toSave, ...entries.filter((e) => e.id !== id)]
+  try {
+    localStorage.setItem(KEY, JSON.stringify(updated))
+    localStorage.setItem(LAST_ID_KEY, id)
+  } catch (e) {
+    console.warn('localStorage save failed:', e)
+  }
+  return toSave
+}
+
 export function getAnalysisById(id) {
-  const list = getHistory()
-  return list.find((e) => e.id === id) ?? null
+  const { entries } = getHistory()
+  const found = entries.find((e) => e.id === id)
+  return found ?? null
 }
 
 export function getLastAnalysisId() {
@@ -62,20 +79,23 @@ export function getLastAnalysisId() {
   }
 }
 
+/** Only skillConfidenceMap, finalScore, updatedAt are updated. baseScore never changed. */
 export function updateAnalysis(id, updates) {
-  const list = getHistory()
-  const idx = list.findIndex((e) => e.id === id)
+  const { entries } = getHistory()
+  const idx = entries.findIndex((e) => e.id === id)
   if (idx === -1) return null
-  const { baseReadinessScore, ...rest } = updates
-  const merged = { ...list[idx], ...rest }
-  if (baseReadinessScore === undefined && list[idx].baseReadinessScore != null) {
-    merged.baseReadinessScore = list[idx].baseReadinessScore
-  } else if (baseReadinessScore !== undefined) {
-    merged.baseReadinessScore = baseReadinessScore
+  const now = new Date().toISOString()
+  const allowed = {
+    skillConfidenceMap: updates.skillConfidenceMap,
+    finalScore: updates.finalScore ?? updates.readinessScore,
+    updatedAt: now,
   }
-  list[idx] = merged
+  const merged = { ...entries[idx], ...allowed }
+  if (merged.finalScore != null) merged.finalScore = Math.max(0, Math.min(100, merged.finalScore))
+  const updated = [...entries]
+  updated[idx] = merged
   try {
-    localStorage.setItem(KEY, JSON.stringify(list))
+    localStorage.setItem(KEY, JSON.stringify(updated))
   } catch (e) {
     console.warn('localStorage update failed:', e)
     return null

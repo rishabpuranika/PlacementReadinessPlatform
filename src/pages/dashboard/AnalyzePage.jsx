@@ -11,6 +11,7 @@ export function AnalyzePage() {
   const [company, setCompany] = useState('')
   const [role, setRole] = useState('')
   const [jdText, setJdText] = useState('')
+  const jdTooShort = jdText.length > 0 && jdText.length < 200
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -72,7 +73,7 @@ export function AnalyzePage() {
             </div>
             <div>
               <label htmlFor="jd" className="block text-sm font-medium text-gray-700 mb-1">
-                Job Description
+                Job Description <span className="text-gray-400">(required)</span>
               </label>
               <textarea
                 id="jd"
@@ -83,6 +84,11 @@ export function AnalyzePage() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary resize-y"
                 required
               />
+              {jdTooShort && (
+                <p className="mt-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                  This JD is too short to analyze deeply. Paste full JD for better output.
+                </p>
+              )}
             </div>
             <button
               type="submit"
