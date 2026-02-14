@@ -52,10 +52,16 @@ export function ShipPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-700">
+            <p className="text-gray-700 mb-4">
               Your placement readiness platform has passed all verification tests. 
-              You can proceed with deployment when ready.
+              Complete proof and artifact links to reach Shipped status.
             </p>
+            <Link
+              to="/prp/proof"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-hover rounded-lg transition-colors"
+            >
+              Open Proof & Submission
+            </Link>
           </CardContent>
         </Card>
       </div>

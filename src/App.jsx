@@ -11,6 +11,7 @@ import { ResourcesPage } from './pages/dashboard/ResourcesPage'
 import { ProfilePage } from './pages/dashboard/ProfilePage'
 import { TestChecklistPage } from './pages/prp/TestChecklistPage'
 import { ShipPage } from './pages/prp/ShipPage'
+import { ProofPage } from './pages/prp/ProofPage'
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         </Route>
         <Route path="/prp/07-test" element={<TestChecklistPage />} />
         <Route path="/prp/08-ship" element={<ShipPage />} />
+        <Route path="/prp/proof" element={<ProofPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
